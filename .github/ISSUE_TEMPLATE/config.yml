@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/kopexa-grc/krn-js/security/advisories/new
+    about: Report security vulnerabilities privately
+  - name: Go Package Issues
+    url: https://github.com/kopexa-grc/krn/issues
+    about: Issues with the Go implementation
+  - name: Shared Fixtures
+    url: https://github.com/kopexa-grc/krn-fixtures/issues
+    about: Issues with shared test fixtures
