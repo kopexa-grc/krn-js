@@ -101,14 +101,26 @@ export function safeResourceId(s: string): string {
     }
   }
 
-  // Trim leading/trailing - and .
-  result = result.replace(/^[-.]+|[-.]+$/g, "");
+  // Trim leading/trailing - and . (using indices to avoid ReDoS)
+  let start = 0;
+  let end = result.length;
+  while (start < end && (result[start] === "-" || result[start] === ".")) {
+    start++;
+  }
+  while (end > start && (result[end - 1] === "-" || result[end - 1] === ".")) {
+    end--;
+  }
+  result = result.slice(start, end);
 
   // Truncate to 200 characters
   if (result.length > 200) {
     result = result.slice(0, 200);
     // Make sure we don't end with - or .
-    result = result.replace(/[-.]+$/, "");
+    let trimEnd = result.length;
+    while (trimEnd > 0 && (result[trimEnd - 1] === "-" || result[trimEnd - 1] === ".")) {
+      trimEnd--;
+    }
+    result = result.slice(0, trimEnd);
   }
 
   return result;
