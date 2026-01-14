@@ -1,14 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   DOMAIN,
-  KRN,
-  KRNBuilder,
-  KRNError,
-  KRNErrorCode,
   getResource,
   isValidResourceId,
   isValidService,
   isValidVersion,
+  KRN,
+  KRNError,
+  KRNErrorCode,
   krn,
   safeResourceId,
 } from "./index.js";
