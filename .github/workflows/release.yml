@@ -27,15 +27,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
-    # Required for npm provenance and OIDC publishing
-    permissions:
-      contents: read
-      id-token: write
-    # npm OIDC trusted publishing - see:
-    # https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-github-actions
-    environment:
-      name: npm
-      url: https://www.npmjs.com/package/@kopexa/krn
     steps:
       - uses: actions/checkout@v4
 
@@ -57,13 +48,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # Uses npm OIDC trusted publishing - no NPM_TOKEN required
-      # Requires one-time setup on npmjs.com:
-      # 1. Go to npmjs.com → @kopexa/krn → Settings → Publishing access
-      # 2. Select "Require two-factor authentication or automation token"
-      # 3. Under "Trusted publishers" add GitHub Actions:
-      #    - Repository: kopexa-grc/krn-js
-      #    - Environment: npm
-      #    - Workflow: release.yml
-      - name: Publish with provenance (OIDC)
-        run: pnpm publish --access public --no-git-checks --provenance
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
