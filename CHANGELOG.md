@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/kopexa-grc/krn-js/compare/v1.0.1...v1.0.2) (2026-01-14)
+
+
+### Bug Fixes
+
+* enable submodule checkout in CI and fix lint ([f7143b4](https://github.com/kopexa-grc/krn-js/commit/f7143b4197879081604cd4b97ca953fd3c265cd8))
+* exclude fixtures submodule from biome ([d868dc7](https://github.com/kopexa-grc/krn-js/commit/d868dc76e5b5169a640a804ab1b8761e11a8c1e9))
+
 ## [1.0.1](https://github.com/kopexa-grc/krn-js/compare/v1.0.0...v1.0.1) (2026-01-14)
 
 
