@@ -16,14 +16,13 @@
 /** Base domain for all KRNs */
 export const DOMAIN = "kopexa.com";
 
-/** Error codes for KRN operations */
+/** Error codes for KRN operations - compatible with Go krn package */
 export const KRNErrorCode = {
   EMPTY_KRN: "EMPTY_KRN",
   INVALID_KRN: "INVALID_KRN",
   INVALID_DOMAIN: "INVALID_DOMAIN",
   INVALID_RESOURCE_ID: "INVALID_RESOURCE_ID",
   INVALID_VERSION: "INVALID_VERSION",
-  INVALID_SERVICE: "INVALID_SERVICE",
   RESOURCE_NOT_FOUND: "RESOURCE_NOT_FOUND",
 } as const;
 
@@ -394,7 +393,7 @@ export class KRN {
   withService(service: string): KRN {
     if (!isValidService(service)) {
       throw new KRNError(
-        KRNErrorCode.INVALID_SERVICE,
+        KRNErrorCode.INVALID_DOMAIN,
         `invalid service name: ${service}`,
       );
     }
@@ -462,7 +461,7 @@ export class KRNBuilder {
 
     if (!isValidService(service)) {
       this._error = new KRNError(
-        KRNErrorCode.INVALID_SERVICE,
+        KRNErrorCode.INVALID_DOMAIN,
         `invalid service name: ${service}`,
       );
       return this;
