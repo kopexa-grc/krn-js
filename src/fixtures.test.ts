@@ -11,13 +11,13 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  KRN,
-  KRNError,
-  type KRNErrorCodeType,
-  KRNErrorCode,
   isValidResourceId,
   isValidService,
   isValidVersion,
+  KRN,
+  KRNError,
+  KRNErrorCode,
+  type KRNErrorCodeType,
   safeResourceId,
 } from "./index.js";
 
