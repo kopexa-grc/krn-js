@@ -18,7 +18,9 @@
       }
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
@@ -49,11 +51,11 @@
   },
   "homepage": "https://github.com/kopexa-grc/krn-js#readme",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.0",
-    "@vitest/coverage-v8": "^2.1.0",
+    "@biomejs/biome": "^2.3.11",
+    "@vitest/coverage-v8": "^4.0.17",
     "tsup": "^8.3.0",
     "typescript": "^5.6.0",
-    "vitest": "^2.1.0"
+    "vitest": "^4.0.17"
   },
   "engines": {
     "node": ">=18"
