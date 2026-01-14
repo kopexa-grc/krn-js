@@ -636,13 +636,38 @@ describe("DOMAIN constant", () => {
 });
 
 describe("KRNErrorCode", () => {
-  it("has expected codes", () => {
+  it("has expected codes matching Go krn package", () => {
+    // These error codes must match the Go krn package for cross-platform compatibility
+    // Go: ErrEmptyKRN, ErrInvalidKRN, ErrInvalidDomain, ErrInvalidResourceID, ErrInvalidVersion, ErrResourceNotFound
     expect(KRNErrorCode.EMPTY_KRN).toBe("EMPTY_KRN");
     expect(KRNErrorCode.INVALID_KRN).toBe("INVALID_KRN");
     expect(KRNErrorCode.INVALID_DOMAIN).toBe("INVALID_DOMAIN");
     expect(KRNErrorCode.INVALID_RESOURCE_ID).toBe("INVALID_RESOURCE_ID");
     expect(KRNErrorCode.INVALID_VERSION).toBe("INVALID_VERSION");
     expect(KRNErrorCode.RESOURCE_NOT_FOUND).toBe("RESOURCE_NOT_FOUND");
+  });
+
+  it("has exactly 6 error codes (matching Go)", () => {
+    const codes = Object.keys(KRNErrorCode);
+    expect(codes).toHaveLength(6);
+    expect(codes).toEqual([
+      "EMPTY_KRN",
+      "INVALID_KRN",
+      "INVALID_DOMAIN",
+      "INVALID_RESOURCE_ID",
+      "INVALID_VERSION",
+      "RESOURCE_NOT_FOUND",
+    ]);
+  });
+
+  it("uses INVALID_DOMAIN for invalid service names (Go compatibility)", () => {
+    // In Go, invalid service names return ErrInvalidDomain, not a separate error
+    try {
+      KRN.parse("//INVALID.kopexa.com/frameworks/iso27001");
+    } catch (err) {
+      expect(err).toBeInstanceOf(KRNError);
+      expect((err as KRNError).code).toBe(KRNErrorCode.INVALID_DOMAIN);
+    }
   });
 });
 
@@ -652,5 +677,266 @@ describe("KRNError", () => {
     expect(error.code).toBe(KRNErrorCode.INVALID_KRN);
     expect(error.message).toBe("test message");
     expect(error.name).toBe("KRNError");
+  });
+});
+
+/**
+ * Go Compatibility Tests
+ *
+ * These tests ensure that the TypeScript implementation is compatible with
+ * the Go krn package (github.com/kopexa-grc/krn).
+ *
+ * The Go package is the source of truth - any changes should be reflected here.
+ */
+describe("Go Compatibility", () => {
+  describe("Parse - same test cases as Go", () => {
+    const validCases = [
+      {
+        name: "simple KRN",
+        input: "//kopexa.com/frameworks/iso27001",
+        depth: 1,
+        basename: "iso27001",
+      },
+      {
+        name: "nested KRN",
+        input: "//kopexa.com/frameworks/iso27001/controls/a-5-1",
+        depth: 2,
+        basename: "a-5-1",
+        basenameCollection: "controls",
+      },
+      {
+        name: "KRN with version",
+        input: "//kopexa.com/frameworks/iso27001@v2",
+        version: "v2",
+      },
+      {
+        name: "KRN with semantic version",
+        input: "//kopexa.com/frameworks/iso27001@v1.2.3",
+        version: "v1.2.3",
+      },
+      {
+        name: "KRN with latest version",
+        input: "//kopexa.com/frameworks/iso27001@latest",
+        version: "latest",
+      },
+      {
+        name: "KRN with draft version",
+        input: "//kopexa.com/frameworks/iso27001@draft",
+        version: "draft",
+      },
+      {
+        name: "deep nested KRN",
+        input:
+          "//kopexa.com/tenants/acme-corp/control-implementations/ci-123/evidences/ev-456",
+        depth: 3,
+      },
+      {
+        name: "resource ID with dots",
+        input: "//kopexa.com/frameworks/iso.27001.2022",
+        basename: "iso.27001.2022",
+      },
+      {
+        name: "resource ID with underscores",
+        input: "//kopexa.com/frameworks/iso_27001_2022",
+        basename: "iso_27001_2022",
+      },
+      {
+        name: "resource ID with mixed characters",
+        input: "//kopexa.com/frameworks/ISO-27001_v2.0",
+        basename: "ISO-27001_v2.0",
+      },
+      {
+        name: "single character resource ID",
+        input: "//kopexa.com/frameworks/x",
+        basename: "x",
+      },
+      {
+        name: "KRN with service",
+        input: "//catalog.kopexa.com/frameworks/iso27001",
+        service: "catalog",
+        fullDomain: "catalog.kopexa.com",
+      },
+      {
+        name: "KRN with service and version",
+        input: "//isms.kopexa.com/tenants/acme-corp@v1",
+        service: "isms",
+        version: "v1",
+      },
+      {
+        name: "control number with dots",
+        input: "//kopexa.com/frameworks/iso27001/controls/5.1.1",
+        basename: "5.1.1",
+      },
+      {
+        name: "NIST control number style",
+        input: "//kopexa.com/frameworks/nist-csf/controls/PR.AC-1",
+        basename: "PR.AC-1",
+      },
+    ];
+
+    for (const tc of validCases) {
+      it(tc.name, () => {
+        const k = KRN.parse(tc.input);
+        if (tc.depth !== undefined) expect(k.depth()).toBe(tc.depth);
+        if (tc.basename !== undefined) expect(k.basename()).toBe(tc.basename);
+        if (tc.basenameCollection !== undefined)
+          expect(k.basenameCollection()).toBe(tc.basenameCollection);
+        if (tc.version !== undefined) expect(k.version).toBe(tc.version);
+        if (tc.service !== undefined) expect(k.service).toBe(tc.service);
+        if (tc.fullDomain !== undefined)
+          expect(k.fullDomain()).toBe(tc.fullDomain);
+      });
+    }
+
+    const invalidCases = [
+      { name: "empty string", input: "", code: KRNErrorCode.EMPTY_KRN },
+      {
+        name: "missing prefix",
+        input: "kopexa.com/frameworks/iso27001",
+        code: KRNErrorCode.INVALID_KRN,
+      },
+      {
+        name: "wrong domain",
+        input: "//google.com/frameworks/iso27001",
+        code: KRNErrorCode.INVALID_DOMAIN,
+      },
+      {
+        name: "missing resource",
+        input: "//kopexa.com",
+        code: KRNErrorCode.INVALID_KRN,
+      },
+      {
+        name: "odd number of path segments",
+        input: "//kopexa.com/frameworks",
+        code: KRNErrorCode.INVALID_KRN,
+      },
+      {
+        name: "empty collection",
+        input: "//kopexa.com//iso27001",
+        code: KRNErrorCode.INVALID_KRN,
+      },
+      {
+        name: "invalid resource ID - starts with dash",
+        input: "//kopexa.com/frameworks/-iso27001",
+        code: KRNErrorCode.INVALID_RESOURCE_ID,
+      },
+      {
+        name: "invalid resource ID - ends with dash",
+        input: "//kopexa.com/frameworks/iso27001-",
+        code: KRNErrorCode.INVALID_RESOURCE_ID,
+      },
+      {
+        name: "invalid resource ID - starts with dot",
+        input: "//kopexa.com/frameworks/.iso27001",
+        code: KRNErrorCode.INVALID_RESOURCE_ID,
+      },
+      {
+        name: "invalid resource ID - ends with dot",
+        input: "//kopexa.com/frameworks/iso27001.",
+        code: KRNErrorCode.INVALID_RESOURCE_ID,
+      },
+      {
+        name: "invalid resource ID - contains space",
+        input: "//kopexa.com/frameworks/iso 27001",
+        code: KRNErrorCode.INVALID_RESOURCE_ID,
+      },
+      {
+        name: "invalid resource ID - contains special char",
+        input: "//kopexa.com/frameworks/iso!27001",
+        code: KRNErrorCode.INVALID_RESOURCE_ID,
+      },
+      {
+        name: "invalid version format",
+        input: "//kopexa.com/frameworks/iso27001@invalid",
+        code: KRNErrorCode.INVALID_VERSION,
+      },
+      {
+        name: "invalid version - missing v prefix",
+        input: "//kopexa.com/frameworks/iso27001@1.0",
+        code: KRNErrorCode.INVALID_VERSION,
+      },
+      {
+        name: "invalid version - too many parts",
+        input: "//kopexa.com/frameworks/iso27001@v1.2.3.4",
+        code: KRNErrorCode.INVALID_VERSION,
+      },
+      {
+        name: "invalid service name - uppercase",
+        input: "//CATALOG.kopexa.com/frameworks/iso27001",
+        code: KRNErrorCode.INVALID_DOMAIN,
+      },
+      {
+        name: "invalid service name - starts with number",
+        input: "//1catalog.kopexa.com/frameworks/iso27001",
+        code: KRNErrorCode.INVALID_DOMAIN,
+      },
+      {
+        name: "invalid service name - starts with dash",
+        input: "//-catalog.kopexa.com/frameworks/iso27001",
+        code: KRNErrorCode.INVALID_DOMAIN,
+      },
+    ];
+
+    for (const tc of invalidCases) {
+      it(`throws ${tc.code} for ${tc.name}`, () => {
+        expect(() => KRN.parse(tc.input)).toThrow(KRNError);
+        try {
+          KRN.parse(tc.input);
+        } catch (err) {
+          expect((err as KRNError).code).toBe(tc.code);
+        }
+      });
+    }
+  });
+
+  describe("Service preservation - same as Go", () => {
+    it("Parent preserves service", () => {
+      const k = KRN.parse(
+        "//catalog.kopexa.com/frameworks/iso27001/controls/a-5-1",
+      );
+      const parent = k.parent();
+      expect(parent?.service).toBe("catalog");
+      expect(parent?.toString()).toBe(
+        "//catalog.kopexa.com/frameworks/iso27001",
+      );
+    });
+
+    it("WithVersion preserves service", () => {
+      const k = KRN.parse("//catalog.kopexa.com/frameworks/iso27001");
+      const versioned = k.withVersion("v1");
+      expect(versioned.service).toBe("catalog");
+    });
+
+    it("WithoutVersion preserves service", () => {
+      const k = KRN.parse("//catalog.kopexa.com/frameworks/iso27001@v1");
+      const unversioned = k.withoutVersion();
+      expect(unversioned.service).toBe("catalog");
+    });
+
+    it("child preserves service", () => {
+      const parent = KRN.parse("//catalog.kopexa.com/frameworks/iso27001");
+      const child = parent.child("controls", "a-5-1");
+      expect(child.service).toBe("catalog");
+      expect(child.toString()).toBe(
+        "//catalog.kopexa.com/frameworks/iso27001/controls/a-5-1",
+      );
+    });
+  });
+
+  describe("String round-trip - same as Go", () => {
+    const roundTripCases = [
+      "//kopexa.com/frameworks/iso27001",
+      "//kopexa.com/frameworks/iso27001/controls/a-5-1",
+      "//kopexa.com/frameworks/iso27001@v1",
+      "//catalog.kopexa.com/frameworks/iso27001",
+      "//catalog.kopexa.com/frameworks/iso27001/controls/5.1.1@v2",
+    ];
+
+    for (const input of roundTripCases) {
+      it(`round-trips: ${input}`, () => {
+        const k = KRN.parse(input);
+        expect(k.toString()).toBe(input);
+      });
+    }
   });
 });
