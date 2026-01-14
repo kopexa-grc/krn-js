@@ -1,0 +1,6 @@
+# Default owners for everything in the repo
+* @kopexa-grc/platform
+
+# Security-sensitive files require security team review
+SECURITY.md @kopexa-grc/security
+.github/workflows/ @kopexa-grc/platform @kopexa-grc/security
