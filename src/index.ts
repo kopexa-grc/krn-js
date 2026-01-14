@@ -117,7 +117,10 @@ export function safeResourceId(s: string): string {
     result = result.slice(0, 200);
     // Make sure we don't end with - or .
     let trimEnd = result.length;
-    while (trimEnd > 0 && (result[trimEnd - 1] === "-" || result[trimEnd - 1] === ".")) {
+    while (
+      trimEnd > 0 &&
+      (result[trimEnd - 1] === "-" || result[trimEnd - 1] === ".")
+    ) {
       trimEnd--;
     }
     result = result.slice(0, trimEnd);
