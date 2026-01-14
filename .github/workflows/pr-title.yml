@@ -34,12 +34,14 @@ jobs:
             deps
             security
             api
+            main
           # Require scope
           requireScope: false
-          # Disable validation for WIP PRs
+          # Disable validation for WIP PRs and release-please
           ignoreLabels: |
             bot
             ignore-semantic-pull-request
+            autorelease: pending
           # Subject pattern (lowercase, no period at end)
           subjectPattern: ^[a-z].+[^.]$
           subjectPatternError: |
