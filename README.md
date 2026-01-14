@@ -1,8 +1,14 @@
+<div align="center">
+
 # @kopexa/krn - Kopexa Resource Names
+
+**Part of the [Kopexa](https://kopexa.com) GRC Platform**
 
 [![npm version](https://badge.fury.io/js/%40kopexa%2Fkrn.svg)](https://www.npmjs.com/package/@kopexa/krn)
 [![CI](https://github.com/kopexa-grc/krn-js/actions/workflows/ci.yml/badge.svg)](https://github.com/kopexa-grc/krn-js/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+</div>
 
 A TypeScript package for working with Kopexa Resource Names (KRN), following [Google's Resource Name Design](https://cloud.google.com/apis/design/resource_names).
 
@@ -307,10 +313,18 @@ try {
 
 ## Related Packages
 
-- [github.com/kopexa-grc/krn](https://github.com/kopexa-grc/krn) - Go implementation
+- [github.com/kopexa-grc/krn](https://github.com/kopexa-grc/krn) - Go implementation (source of truth)
+- [krn-fixtures](https://github.com/kopexa-grc/krn-fixtures) - Shared test fixtures
+
+## About Kopexa
+
+[Kopexa](https://kopexa.com) is a modern GRC (Governance, Risk, and Compliance) platform that helps organizations manage their compliance requirements efficiently.
+
+- **Website**: [kopexa.com](https://kopexa.com)
+- **Documentation**: [docs.kopexa.com](https://docs.kopexa.com)
 
 ## License
 
-Copyright (c) Kopexa GRC
+Copyright (c) [Kopexa GRC](https://kopexa.com)
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
