@@ -170,7 +170,7 @@ describe("KRN.parse", () => {
 
     it("throws on invalid version format", () => {
       expect(() =>
-        KRN.parse("//kopexa.com/frameworks/iso27001@invalid"),
+        KRN.parse("//kopexa.com/frameworks/iso27001@-invalid"),
       ).toThrow(KRNError);
     });
 
@@ -296,7 +296,7 @@ describe("KRN methods", () => {
 
     it("throws on invalid version", () => {
       const k = KRN.parse("//kopexa.com/frameworks/iso27001");
-      expect(() => k.withVersion("invalid")).toThrow(KRNError);
+      expect(() => k.withVersion("-invalid")).toThrow(KRNError);
     });
 
     it("preserves service", () => {
@@ -494,7 +494,7 @@ describe("KRNBuilder", () => {
 
   it("throws on invalid version", () => {
     expect(() =>
-      krn().resource("frameworks", "iso27001").version("invalid").build(),
+      krn().resource("frameworks", "iso27001").version("-invalid").build(),
     ).toThrow(KRNError);
   });
 
@@ -548,23 +548,44 @@ describe("validation functions", () => {
   });
 
   describe("isValidVersion", () => {
-    it("accepts valid versions", () => {
+    it("accepts valid versions with v prefix", () => {
       expect(isValidVersion("v1")).toBe(true);
       expect(isValidVersion("v12")).toBe(true);
       expect(isValidVersion("v1.2")).toBe(true);
       expect(isValidVersion("v1.2.3")).toBe(true);
       expect(isValidVersion("v10.20.30")).toBe(true);
+      expect(isValidVersion("v1.2.3.4")).toBe(true);
+    });
+
+    it("accepts special versions", () => {
       expect(isValidVersion("latest")).toBe(true);
       expect(isValidVersion("draft")).toBe(true);
     });
 
+    it("accepts OSCAL-compatible versions without v prefix", () => {
+      expect(isValidVersion("1")).toBe(true);
+      expect(isValidVersion("1.0")).toBe(true);
+      expect(isValidVersion("1.0.0")).toBe(true);
+      expect(isValidVersion("2022")).toBe(true);
+      expect(isValidVersion("2022-01")).toBe(true);
+      expect(isValidVersion("2022-01-15")).toBe(true);
+      expect(isValidVersion("rev1")).toBe(true);
+      expect(isValidVersion("release-2")).toBe(true);
+      expect(isValidVersion("version1")).toBe(true);
+      expect(isValidVersion("release")).toBe(true);
+    });
+
     it("rejects invalid versions", () => {
       expect(isValidVersion("")).toBe(false);
-      expect(isValidVersion("1")).toBe(false);
-      expect(isValidVersion("1.0")).toBe(false);
       expect(isValidVersion("v")).toBe(false);
-      expect(isValidVersion("v1.2.3.4")).toBe(false);
-      expect(isValidVersion("version1")).toBe(false);
+      expect(isValidVersion("v1.")).toBe(false);
+      expect(isValidVersion("-starts-with-dash")).toBe(false);
+      expect(isValidVersion("ends-with-dash-")).toBe(false);
+      expect(isValidVersion(".starts-with-dot")).toBe(false);
+      expect(isValidVersion("ends-with-dot.")).toBe(false);
+      expect(isValidVersion("has space")).toBe(false);
+      expect(isValidVersion("has@symbol")).toBe(false);
+      expect(isValidVersion("has/slash")).toBe(false);
     });
   });
 
@@ -846,18 +867,18 @@ describe("Go Compatibility", () => {
         code: KRNErrorCode.INVALID_RESOURCE_ID,
       },
       {
-        name: "invalid version format",
-        input: "//kopexa.com/frameworks/iso27001@invalid",
+        name: "invalid version - v alone",
+        input: "//kopexa.com/frameworks/iso27001@v",
         code: KRNErrorCode.INVALID_VERSION,
       },
       {
-        name: "invalid version - missing v prefix",
-        input: "//kopexa.com/frameworks/iso27001@1.0",
+        name: "invalid version - starts with dash",
+        input: "//kopexa.com/frameworks/iso27001@-1.0",
         code: KRNErrorCode.INVALID_VERSION,
       },
       {
-        name: "invalid version - too many parts",
-        input: "//kopexa.com/frameworks/iso27001@v1.2.3.4",
+        name: "invalid version - ends with dot",
+        input: "//kopexa.com/frameworks/iso27001@v1.2.",
         code: KRNErrorCode.INVALID_VERSION,
       },
       {

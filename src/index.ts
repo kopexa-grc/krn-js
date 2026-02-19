@@ -48,7 +48,12 @@ export interface Segment {
 /** Validation patterns */
 const RESOURCE_ID_PATTERN =
   /^[a-zA-Z0-9]([a-zA-Z0-9._-]{0,198}[a-zA-Z0-9])?$|^[a-zA-Z0-9]$/;
-const VERSION_PATTERN = /^(v\d+(\.\d+){0,2}|latest|draft)$/;
+// OSCAL-compatible version pattern:
+// - Alphanumeric, dots, dashes, underscores allowed
+// - Cannot start or end with dash or dot
+// - "v" alone is invalid (checked separately)
+// Examples: v1, v1.2.3, 2022, 2022-01-15, 1.0.0, latest, draft
+const VERSION_PATTERN = /^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?$/;
 const SERVICE_PATTERN = /^[a-z][a-z0-9-]{0,61}[a-z0-9]$|^[a-z]$/;
 
 /**
@@ -64,10 +69,15 @@ export function isValidResourceId(id: string): boolean {
 }
 
 /**
- * Check if a string is a valid version.
- * Valid formats: v1, v1.2, v1.2.3, latest, draft
+ * Check if a string is a valid version (OSCAL-compatible).
+ * Versions must be alphanumeric with dots, dashes, underscores.
+ * Cannot start or end with dash or dot. "v" alone is invalid.
+ * Valid formats: v1, v1.2.3, 2022, 2022-01-15, 1.0.0, latest, draft
  */
 export function isValidVersion(version: string): boolean {
+  if (!version || version === "v") {
+    return false;
+  }
   return VERSION_PATTERN.test(version);
 }
 
