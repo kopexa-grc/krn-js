@@ -1,6 +1,6 @@
 {
   "name": "@kopexa/krn",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Kopexa Resource Names (KRN) - TypeScript implementation",
   "type": "module",
   "main": "./dist/index.cjs",
