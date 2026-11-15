@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/kopexa-grc/krn-js/compare/v1.1.1...v1.1.2) (2026-11-15)
+
+
+### Bug Fixes
+
+* **ci:** drop Dependabot automerge and update monthly ([8f3e946](https://github.com/kopexa-grc/krn-js/commit/8f3e9466fef5687790ead3c8b44da3790496e86a))
+* **ci:** update the GitHub Actions to the current majors ([50cecd8](https://github.com/kopexa-grc/krn-js/commit/50cecd8686009d931ec3944aca12102636ad6c4e))
+
 ## [1.1.1](https://github.com/kopexa-grc/krn-js/compare/v1.1.0...v1.1.1) (2026-11-15)
 
 
