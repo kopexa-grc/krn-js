@@ -3,26 +3,25 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     labels:
       - "dependencies"
-      - "automerge"
+    ignore:
+      # Major versions are updated by hand, one topic at a time.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Biome is updated together with sight, the frontend and the backend.
+      - dependency-name: "@biomejs/biome"
     groups:
-      dev-dependencies:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+      minor-and-patch:
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     labels:
       - "dependencies"
-      - "automerge"
     groups:
       github-actions:
-        patterns:
-          - "*"
+        patterns: ["*"]
