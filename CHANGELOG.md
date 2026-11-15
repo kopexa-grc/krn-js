@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/kopexa-grc/krn-js/compare/v1.1.0...v1.1.1) (2026-11-15)
+
+
+### Bug Fixes
+
+* **ci:** update the GitHub Actions ([506099a](https://github.com/kopexa-grc/krn-js/commit/506099a8eca830659d2e3a20340f1f43b51b14ff))
+* **deps:** update the dev tooling to Vitest 5 and tsup 9 ([88b2501](https://github.com/kopexa-grc/krn-js/commit/88b2501ea76f5bfc1284837d8e0c1abfc563507c))
+
 ## [1.1.0](https://github.com/kopexa-grc/krn-js/compare/v1.0.1...v1.1.0) (2026-02-19)
 
 
